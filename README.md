@@ -30,6 +30,7 @@ These definitions can now be applied to Go code as follows:
 ```go
 import "github.com/thediveo/ioctl"
 
+const NSIO = 0xb7
 var NS_GET_USERNS = _IO(NSIO, 0x1)
 
 func main() {
