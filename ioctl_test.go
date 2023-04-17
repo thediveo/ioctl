@@ -47,8 +47,7 @@ var _ = Describe("ioctl requests", func() {
 
 	It("calculates _IO correctly", func() {
 		const NSIO = 0xb7
-
-		var NS_GET_USERNS = _IO(NSIO, 0x1)
+		var NS_GET_USERNS = IO(NSIO, 0x1)
 
 		netnsf := Successful(os.Open("/proc/self/ns/net"))
 		defer netnsf.Close()

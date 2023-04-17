@@ -33,29 +33,29 @@ trying to patronizing us.
 [following definitions]: https://elixir.bootlin.com/linux/v6.2.11/source/include/uapi/asm-generic/ioctl.h
 */
 const (
-	_IOC_NRBITS   = 8
-	_IOC_TYPEBITS = 8
-	_IOC_SIZEBITS = 14
+	IOC_NRBITS   = 8
+	IOC_TYPEBITS = 8
+	IOC_SIZEBITS = 14
 
-	_IOC_NRSHIFT   = 0
-	_IOC_TYPESHIFT = _IOC_NRSHIFT + _IOC_NRBITS
-	_IOC_SIZESHIFT = _IOC_TYPESHIFT + _IOC_TYPEBITS
-	_IOC_DIRSHIFT  = _IOC_SIZESHIFT + _IOC_SIZEBITS
+	IOC_NRSHIFT   = 0
+	IOC_TYPESHIFT = IOC_NRSHIFT + IOC_NRBITS
+	IOC_SIZESHIFT = IOC_TYPESHIFT + IOC_TYPEBITS
+	IOC_DIRSHIFT  = IOC_SIZESHIFT + IOC_SIZEBITS
 
-	_IOC_NONE = uint(0)
+	IOC_NONE = uint(0)
 )
 
-// Returns an ioctl(2) request value, calculated from the specific ioctl call
-// properties: parameter in/out direction, type of ioctl, command number, and
-// finally parameter size.
-func _IOC(dir, ioctype, nr, size uint) uint {
-	return (dir << _IOC_DIRSHIFT) | (ioctype << _IOC_TYPESHIFT) | (nr << _IOC_NRSHIFT) | (size << _IOC_SIZESHIFT)
+// IOC returns an ioctl(2) request value, calculated from the specific ioctl
+// call properties: parameter in/out direction, type of ioctl, command number,
+// and finally parameter size.
+func IOC(dir, ioctype, nr, size uint) uint {
+	return (dir << IOC_DIRSHIFT) | (ioctype << IOC_TYPESHIFT) | (nr << IOC_NRSHIFT) | (size << IOC_SIZESHIFT)
 }
 
-// Returns an ioctl(2) request value for a request that doesn't have any
+// IO returns an ioctl(2) request value for a request that doesn't have any
 // additional request parameter.
-func _IO(ioctype, nr uint) uint {
-	return _IOC(_IOC_NONE, ioctype, nr, 0)
+func IO(ioctype, nr uint) uint {
+	return IOC(IOC_NONE, ioctype, nr, 0)
 }
 
 // RetFd issues the specified ioctĺ request and returns the successful result as

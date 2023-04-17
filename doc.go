@@ -16,7 +16,8 @@ These definitions can now be applied to Go code as follows:
 
 	import "github.com/thediveo/ioctl"
 
-	var NS_GET_USERNS = _IO(NSIO, 0x1)
+	const NSIO = 0xb7
+	var NS_GET_USERNS = ioctl.IO(NSIO, 0x1)
 
 	fd, err := ioctl.RetFd(nsfd, NS_GET_USERNS)
 
