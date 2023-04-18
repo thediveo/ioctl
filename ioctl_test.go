@@ -39,22 +39,59 @@ func nsIno[R ~int | ~string](ref R) uint64 {
 
 var _ = Describe("ioctl requests", func() {
 
-	It("returns an invalid -1 fd when in error", func() {
-		fd, err := RetFd(0, 0)
-		Expect(err).To(HaveOccurred())
-		Expect(fd).To(Equal(int(-1)))
+	Context("request value calculation", func() {
+
+		const (
+			ioctype = 0x12
+			iocnr   = 0x42
+			iosize  = 0x234 // must be <= 2**13-1 (some archs)
+		)
+
+		// ah, the beauty of full coverage...
+		ioc := func(dir, ioctype, nr, size uint) uint {
+			return (dir << IOC_DIRSHIFT) | (ioctype << IOC_TYPESHIFT) | (nr << IOC_NRSHIFT) | (size << IOC_SIZESHIFT)
+		}
+
+		DescribeTable("IO*",
+			func(actual, expected uint) {
+				Expect(actual).To(Equal(expected), "0x%08x 0x%08x", actual, expected)
+			},
+			Entry("IO no R, no W",
+				IO(ioctype, iocnr),
+				ioc(IOC_NONE, ioctype, iocnr, 0)),
+			Entry("IOR",
+				IOR(ioctype, iocnr, iosize),
+				ioc(IOC_READ, ioctype, iocnr, iosize)),
+			Entry("IOW",
+				IOW(ioctype, iocnr, iosize),
+				ioc(IOC_WRITE, ioctype, iocnr, iosize)),
+			Entry("IORW",
+				IORW(ioctype, iocnr, iosize),
+				ioc(IOC_WRITE|IOC_READ, ioctype, iocnr, iosize)),
+		)
+
 	})
 
-	It("calculates _IO correctly", func() {
-		const NSIO = 0xb7
-		var NS_GET_USERNS = IO(NSIO, 0x1)
+	Context("RetFd", func() {
 
-		netnsf := Successful(os.Open("/proc/self/ns/net"))
-		defer netnsf.Close()
-		usernsfd, err := RetFd(int(netnsf.Fd()), NS_GET_USERNS)
-		Expect(err).NotTo(HaveOccurred())
-		defer unix.Close(usernsfd)
-		Expect(nsIno(usernsfd)).To(Equal(nsIno("/proc/self/ns/user")))
+		It("returns an invalid -1 fd when in error", func() {
+			fd, err := RetFd(0, 0)
+			Expect(err).To(HaveOccurred())
+			Expect(fd).To(Equal(int(-1)))
+		})
+
+		It("calculates _IO and executes RetFd correctly", func() {
+			const NSIO = 0xb7
+			var NS_GET_USERNS = IO(NSIO, 0x1)
+
+			netnsf := Successful(os.Open("/proc/self/ns/net"))
+			defer netnsf.Close()
+			usernsfd, err := RetFd(int(netnsf.Fd()), NS_GET_USERNS)
+			Expect(err).NotTo(HaveOccurred())
+			defer unix.Close(usernsfd)
+			Expect(nsIno(usernsfd)).To(Equal(nsIno("/proc/self/ns/user")))
+		})
+
 	})
 
 })
