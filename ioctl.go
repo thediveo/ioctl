@@ -12,37 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux && !(wasm || mips || mipsle || mips64 || mips64le || mips64p32 || mips64p32le || ppc || ppc64 || ppc64le || sparc || sparc64)
+
 package ioctl
 
 import (
 	"errors"
 
 	"golang.org/x/sys/unix"
-)
-
-/*
-Ugly IOCTL stuff.
-
-ATTENTION: the [following definitions] hold only for the "asm-generic"
-platforms, such as x86, arm, and others. Currently the only platforms having a
-different ioctl request field mapping are: alpha, mips, powerpc, and sparc.
-
-We keep the original C identifiers on purpose and don't care about linters
-trying to patronizing us.
-
-[following definitions]: https://elixir.bootlin.com/linux/v6.2.11/source/include/uapi/asm-generic/ioctl.h
-*/
-const (
-	IOC_NRBITS   = 8
-	IOC_TYPEBITS = 8
-	IOC_SIZEBITS = 14
-
-	IOC_NRSHIFT   = 0
-	IOC_TYPESHIFT = IOC_NRSHIFT + IOC_NRBITS
-	IOC_SIZESHIFT = IOC_TYPESHIFT + IOC_TYPEBITS
-	IOC_DIRSHIFT  = IOC_SIZESHIFT + IOC_SIZEBITS
-
-	IOC_NONE = uint(0)
 )
 
 // IOC returns an ioctl(2) request value, calculated from the specific ioctl
@@ -56,6 +33,25 @@ func IOC(dir, ioctype, nr, size uint) uint {
 // additional request parameter.
 func IO(ioctype, nr uint) uint {
 	return IOC(IOC_NONE, ioctype, nr, 0)
+}
+
+// IOR returns an ioctl(2) request value for a request that has an additional
+// request parameter that the userland wants to read and the kernel is writing.
+func IOR(ioctype, nr, size uint) uint {
+	return IOC(IOC_READ, ioctype, nr, size)
+}
+
+// IOW returns an ioctl(2) request value for a request that has an additional
+// request parameter that the userland wants to read and the kernel is writing.
+func IOW(ioctype, nr, size uint) uint {
+	return IOC(IOC_WRITE, ioctype, nr, size)
+}
+
+// IORW returns an ioctl(2) request value for a request that has an additional
+// request parameter that the userland first wants to write, the kernel then
+// reads and updates it, and the userland finally wants to read it afterwards.
+func IORW(ioctype, nr, size uint) uint {
+	return IOC(IOC_READ|IOC_WRITE, ioctype, nr, size)
 }
 
 // RetFd issues the specified ioctĺ request and returns the successful result as

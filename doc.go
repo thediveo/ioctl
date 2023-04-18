@@ -1,16 +1,17 @@
 /*
-Package ioctl is a thin convenience wrapper for those ioctl request numbers that are not defined
-as plain numbers but instead as macros in the Linux kernel header files.
+Package ioctl is a thin convenience wrapper for working with those ioctl request
+numbers that are not defined as plain numbers but instead as macros in the Linux
+kernel header files.
 
 # Example
 
 The request values for [ioctl_ns(2)] operations are defined using C macros in
 [include/uapi/linux/nsfs.h] in the Linux kernel header sources as follows:
 
-	#define NSIO	0xb7
+	#define NSIO 0xb7
 
 	// Returns a file descriptor that refers to an owning user namespace
-	#define NS_GET_USERNS		_IO(NSIO, 0x1)
+	#define NS_GET_USERNS _IO(NSIO, 0x1)
 
 These definitions can now be applied to Go code as follows:
 
