@@ -2,7 +2,7 @@
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/thediveo/ioctl)](https://pkg.go.dev/github.com/thediveo/ioctl)
 [![GitHub](https://img.shields.io/github/license/thediveo/ioctl)](https://img.shields.io/github/license/thediveo/ioctl)
-![build and test](https://github.com/thediveo/ioctl/workflows/build%20and%20test/badge.svg?branch=master)
+![build and test](https://github.com/thediveo/ioctl/actions/workflows/buildandtest.yaml/badge.svg?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/thediveo/ioctl)](https://goreportcard.com/report/github.com/thediveo/ioctl)
 ![Coverage](https://img.shields.io/badge/Coverage-100.0%25-brightgreen)
 
@@ -10,6 +10,11 @@ A tiny package to help with dealing with constructing Linux
 [ioctl(2)](https://man7.org/linux/man-pages/man2/ioctl.2.html) request values
 that are not already included in the
 [sys/unix](https://pkg.go.dev/golang.org/x/sys/unix) standard package.
+
+For devcontainer instructions, please see the [section "DevContainer"
+below](#devcontainer).
+
+## Usage
 
 A good example are
 [ioctl_ns(2)](https://man7.org/linux/man-pages/man2/ioctl_ns.2.html) operations
@@ -38,24 +43,25 @@ func main() {
 }
 ```
 
-## Make Targets
+## DevContainer
 
-- `make`: lists all targets.
-- `make coverage`: runs all tests with coverage and then **updates the coverage
-  badge in `README.md`**.
-- `make pkgsite`: installs [`x/pkgsite`](https://golang.org/x/pkgsite/cmd/pkgsite), as
-  well as the [`browser-sync`](https://www.npmjs.com/package/browser-sync) and
-  [`nodemon`](https://www.npmjs.com/package/nodemon) npm packages first, if not
-  already done so. Then runs the `pkgsite` and hot reloads it whenever the
-  documentation changes.
-- `make report`: installs
-  [`@gojp/goreportcard`](https://github.com/gojp/goreportcard) if not yet done
-  so and then runs it on the code base.
-- `make test`: runs **all** tests, always.
-- `make vuln`: installs
-  [`x/vuln/cmd/govulncheck`](https://golang.org/x/vuln/cmd/govulncheck) and then
-  runs it.
+> [!CAUTION]
+>
+> Do **not** use VSCode's "~~Dev Containers: Clone Repository in Container
+> Volume~~" command, as it is utterly broken by design, ignoring
+> `.devcontainer/devcontainer.json`.
+
+1. `git clone https://github.com/thediveo/enumflag`
+2. in VSCode: Ctrl+Shift+P, "Dev Containers: Open Workspace in Container..."
+3. select `enumflag.code-workspace` and off you go...
+
+## Supported Go Versions
+
+`native` supports versions of Go that are noted by the [Go release
+policy](https://golang.org/doc/devel/release.html#policy), that is, major
+versions _N_ and _N_-1 (where _N_ is the current major version).
 
 ## Copyright and License
 
-Copyright 2023 Harald Albrecht, licensed under the Apache License, Version 2.0.
+Copyright 2023, 2025 Harald Albrecht, licensed under the Apache License, Version
+2.0.
