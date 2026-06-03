@@ -85,10 +85,10 @@ var _ = Describe("ioctl requests", func() {
 			var NS_GET_USERNS = IO(NSIO, 0x1)
 
 			netnsf := Successful(os.Open("/proc/self/ns/net"))
-			defer netnsf.Close()
+			defer func() { _ = netnsf.Close() }()
 			usernsfd, err := RetFd(int(netnsf.Fd()), NS_GET_USERNS)
 			Expect(err).NotTo(HaveOccurred())
-			defer unix.Close(usernsfd)
+			defer func() { _ = unix.Close(usernsfd) }()
 			Expect(nsIno(usernsfd)).To(Equal(nsIno("/proc/self/ns/user")))
 		})
 
